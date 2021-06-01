@@ -11,9 +11,8 @@ import javax.persistence.Id;
 @Data
 public class Payment_method {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int Id_payment_method;
-
     private String name;
 
 }

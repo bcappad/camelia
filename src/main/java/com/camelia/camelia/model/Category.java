@@ -11,15 +11,8 @@ import javax.persistence.Id;
 @Data
 public class Category {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id_category;
-
-   /* enum name{
-        JUGUETES,
-        LENCERIA,
-        AROMATICAS,
-        GELES
-    }*/
 
     private String name;
 }

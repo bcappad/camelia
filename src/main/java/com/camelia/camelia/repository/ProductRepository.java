@@ -1,7 +1,6 @@
 package com.camelia.camelia.repository;
 
 import com.camelia.camelia.model.Product;
-import com.camelia.camelia.model.Provider;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;

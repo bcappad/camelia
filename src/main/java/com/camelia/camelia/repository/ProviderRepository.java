@@ -12,4 +12,7 @@ public interface ProviderRepository extends CrudRepository<Provider, Integer> {
 
     @Query("from Provider where tradename like %:tradename%")
     Iterable<Provider> getProviderByTradenameLike(@Param("tradename") String tradename);
+
+    @Query("from Provider where tradename like %:tradename% or name like %:name%")
+    Iterable<Provider> getProviderByNameOrTradenameLike(@Param("tradename") String tradename, @Param("name") String name);
 }

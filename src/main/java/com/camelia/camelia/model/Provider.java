@@ -11,9 +11,8 @@ import javax.persistence.Id;
 @Data
 public class Provider {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id_provider;
-
     private String name;
     private String tradename;
     private String cuit;
