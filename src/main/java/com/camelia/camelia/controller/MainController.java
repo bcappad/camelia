@@ -2,6 +2,7 @@ package com.camelia.camelia.controller;
 import com.camelia.camelia.model.*;
 import com.camelia.camelia.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
@@ -135,6 +136,12 @@ public class MainController {
         return invoiceRepository.findById(id);
     }
 
+    @GetMapping(path = "/sale/{id}")
+    public @ResponseBody
+    Optional<Sale> getSalesById(@PathVariable("id") int id) {
+        return saleRepository.findById(id);
+    }
+
     //////////////////////        CUSTOM QUERIES        //////////////////////
 
     @GetMapping(path = "/provider/nameortradename/like/{tradename}{name}")
@@ -170,13 +177,28 @@ public class MainController {
         return providerRepository.findAll();
     }
 
-    @DeleteMapping(path = "/product/delete/{id_product}")
+    ///////////// borrado de producto solo por usuario admin
+    @DeleteMapping(path = "/loggeduser/{id_loggeduser}/product/delete/{id_product}")
     public @ResponseBody
-    Iterable<Product> deleteProductById(@PathVariable("id_product") int id_product) {
-        productRepository.deleteById(id_product);
-        return productRepository.findAll();
+    ResponseEntity<GeneralResponse> deleteProductByLoggedUser(@PathVariable("id_product") int id_product, @PathVariable("id_loggeduser") int id_loggeduser) {
+        GeneralResponse response = new GeneralResponse();
+        try {
+            User loggeduser = userRepository.findById(id_loggeduser).get();
+            if (loggeduser.getId_user_role().getId_user_role() ==1) {
+               productRepository.deleteById(id_product);
+               response.setCode(HttpStatus.OK.value());
+               response.setMessage("El producto fue eliminado correctamente");
+                return ResponseEntity.ok(response);
+            }
+            response.setCode(HttpStatus.UNAUTHORIZED.value());
+            response.setMessage("El usuario no tiene autorización para eliminar productos, consulte con el adminsitrador");
+            return ResponseEntity.ok(response);
+        }catch (Exception e){
+            response.setCode(HttpStatus.CONFLICT.value());
+            response.setMessage(HttpStatus.CONFLICT.getReasonPhrase()+ " - "+e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
     }
-
     @DeleteMapping(path = "/customer/delete/{id_customer}")
     public @ResponseBody
     Iterable<Customer> deleteCustomerById(@PathVariable("id_customer") int id_customer) {
@@ -195,7 +217,7 @@ public class MainController {
     public Customer updateCustomer(@RequestBody Customer updatedCustomer) {
         return customerRepository.save(updatedCustomer);
     }
-
+    // restringir acceso
     @PutMapping(path = "product/update/{id_product}")
     public Product updateProduct(@RequestBody Product updatedProduct) {
         return productRepository.save(updatedProduct);
@@ -232,7 +254,22 @@ public class MainController {
     public User createUser(@RequestBody User newUser) {
         return userRepository.save(newUser);
     }
+/*
+    @PostMapping(path = "/invoice/create", consumes = "application/json", produces = "application/json")
+    public Invoice createInvoice(@RequestBody Invoice newInvoice) {
+        Invoice newInvoice = new Invoice();
+        Sale newSale = new Sale();
+        newInvoice.setId_payment_method(newInvoice.getId_payment_method());
+        newInvoice.setId_user(newInvoice.getId_user());
+        newInvoice.setSales(newSale.setId_product(newSale.getId_product());
 
+        newSale.setQuantity(newSale.getQuantity());
+        newSale.setTotal(newSale.getQuantity() * newSale.getId_product);
+
+        newInvoice.setSales(newSale.setTo););
+        return invoiceRepository.save(newInvoice);
+    }
+    */
     @PostMapping(path = "/product/create", consumes = "application/json", produces = "application/json")
     public Product createProduct(@RequestBody Product newProduct) {
         return productRepository.save(newProduct);
